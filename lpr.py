@@ -12,7 +12,7 @@ from google.colab.patches import cv2_imshow
 frameWidth = 640    #Frame Width
 franeHeight = 480   # Frame Height
 
-plateCascade = cv2.CascadeClassifier("/content/haarcascade_russian_plate_number.xml")
+plateCascade = cv2.CascadeClassifier("CLASSIFIER PATH")
 minArea = 500
 
 cap =cv2.VideoCapture(0)
@@ -31,7 +31,7 @@ image_path = "IMAGE PATH HERE"  # Replace with the actual image path
 img = cv2.imread(image_path)
 
 # Load the pre-trained Haar Cascade for license plate detection
-plate_cascade = cv2.CascadeClassifier("/content/haarcascade_russian_plate_number.xml")
+plate_cascade = cv2.CascadeClassifier("CLASSIFER PATH HERE")
 
 # Convert the image to grayscale
 img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -71,11 +71,26 @@ print(recognized_plate_number)
   # Replace with the recognized plate number from your code
 
 # Create a dictionary of car owner information
+
+import requests
+
+url = "API URL"
+
+querystring = {"authorization":"API KEY","message":"SAMPLE MESSAGE","language":"english","route":"dlt","numbers":"9789288163"}
+
+headers = {
+    'cache-control': "no-cache"
+}
+
+response = requests.request("GET", url, headers=headers, params=querystring)
+
+print(response.text)
+
 import re
 car_owner_info = {
-    "HR26BR9044": {"owner_name": "Hariprasath", "mobile_number": "9080923673"},
-    "H982FKL": {"owner_name": "Dhinakaran", "mobile_number": "9789288163"},
-    "HR26DK8337": {"owner_name": "Gokul Prasath", "mobile_number": "7373947704"}
+    "HR26BR9044": {"owner_name": "Hariprasath", "mobile_number": "8888888888"},
+    "H982FKL": {"owner_name": "Dhinakaran", "mobile_number": "77777777777"},
+    "HR26DK8337": {"owner_name": "Gokul Prasath", "mobile_number": "9999999999"}
 }
 
 recognized_plate_number= re.sub(r'[^a-zA-Z0-9]', '', recognized_plate_number)
@@ -87,4 +102,15 @@ if recognized_plate_number in list(car_owner_info.keys()):
     # Simulate sending an SMS
     print(f"Sending SMS to {mobile_number}: Hello {owner_name}, your car has been detected.")
 else:
-    print("License plate not found in the dictionary")
+
+if recognized_plate_number in list(car_owner_info.keys()):
+    owner_info = car_owner_info[recognized_plate_number]
+    owner_name = owner_info["owner_name"]
+    mobile_number = owner_info["mobile_number"]
+    try:
+      send_sms(name=owner_name,number=mobile_number)
+      print("message send successfully")
+    except:
+      print("failed to send sms")
+else:
+    print("License plate not found in the dictionary")
